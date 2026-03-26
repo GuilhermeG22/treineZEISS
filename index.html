@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<!-- ══ PWA / iOS ══ -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ZEISS">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0b0e14">
+<meta name="description" content="Portal de treinamento ZEISS — tecnologias, lentes e tratamentos">
+
+<!-- Ícones iOS (apple-touch-icon) -->
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+
+<!-- Ícone padrão -->
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+
+<!-- Manifest PWA -->
+<link rel="manifest" href="manifest.json">
+
+<title>ZEISS — Treinamento</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#0b0e14;--bg2:#111520;--bg3:#161b27;
+  --card:#1a2030;--card2:#1f2638;
+  --border:#262d40;--border2:#2e3850;
+  --blue:#4a9eff;--blue2:#1a6fd4;--blue-glow:rgba(74,158,255,.18);--blue-dim:#0e2a50;
+  --teal:#2ee8c0;--teal-dim:#0a3028;
+  --gold:#f0c040;--gold-dim:#2a2208;
+  --coral:#ff7055;--coral-dim:#301510;
+  --green:#5dd87a;--green-dim:#0d2518;
+  --violet:#b07cff;--violet-dim:#1e1035;
+  --text:#e8edf5;--text2:#8a93a8;--text3:#535c72;
+  --font:'DM Sans',sans-serif;--font-serif:'DM Serif Display',serif;
+  --r:14px;--r-sm:9px;
+  --bottom-nav-h:82px;
+  --top-h:56px;
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.5;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+
+/* ── SHELL ── */
+.shell{display:flex;min-height:100vh;position:relative;z-index:1;}
+
+/* ══════════════════════════════
+   DESKTOP SIDEBAR
+══════════════════════════════ */
+.sidebar{
+  width:240px;min-width:240px;background:var(--bg2);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+}
+.sb-logo{padding:28px 24px 20px;border-bottom:1px solid var(--border);}
+.sb-brand{font-family:var(--font-serif);font-size:26px;color:#fff;letter-spacing:.06em;}
+.sb-tag{font-size:11px;color:var(--text3);margin-top:4px;letter-spacing:.04em;text-transform:uppercase;}
+.sb-section{padding:20px 16px 8px;}
+.sb-sec-label{font-size:10px;font-weight:600;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;padding:0 8px;margin-bottom:6px;}
+.nav-btn{
+  display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;
+  border-radius:var(--r-sm);border:none;background:transparent;
+  font-family:var(--font);font-size:13.5px;color:var(--text2);
+  cursor:pointer;text-align:left;transition:all .18s;
+}
+.nav-btn:hover{background:var(--bg3);color:var(--text);}
+.nav-btn.active{background:var(--blue-dim);color:var(--blue);font-weight:500;}
+.nav-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.nav-count{margin-left:auto;font-size:11px;background:var(--bg3);color:var(--text3);padding:2px 7px;border-radius:10px;}
+.sb-footer{margin-top:auto;padding:16px 24px;border-top:1px solid var(--border);font-size:11px;color:var(--text3);line-height:1.6;}
+.sb-brand-tag{display:flex;align-items:center;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+.sb-brand-dot{width:6px;height:6px;border-radius:50%;background:var(--blue);flex-shrink:0;}
+.sb-brand-name{font-size:11px;font-weight:600;color:rgba(255,255,255,.25);letter-spacing:.04em;}
+
+/* ══════════════════════════════
+   MAIN
+══════════════════════════════ */
+.main{flex:1;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;}
+
+/* ── TOP BAR ── */
+.topbar{
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  padding:0 20px;height:var(--top-h);
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:30;gap:12px;
+}
+.topbar-left{display:flex;align-items:center;gap:10px;}
+.topbar-title{font-size:17px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.search-wrap{position:relative;flex:1;max-width:260px;}
+.search-input{
+  width:100%;padding:8px 12px 8px 34px;font-size:13px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;color:var(--text);font-family:var(--font);
+  transition:border-color .2s;
+}
+.search-input:focus{outline:none;border-color:var(--blue);}
+.search-input::placeholder{color:var(--text3);}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:13px;pointer-events:none;}
+
+/* ── PAGES ── */
+.page{display:none;padding:20px 20px 32px;animation:fadeIn .25s ease;}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── PAGE HERO ── */
+.page-hero{margin-bottom:22px;}
+.page-hero h1{font-family:var(--font-serif);font-size:28px;font-weight:400;color:#fff;margin-bottom:6px;line-height:1.2;}
+.page-hero p{font-size:14px;color:var(--text2);line-height:1.6;max-width:600px;}
+
+/* ── STAT STRIP ── */
+.stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;}
+.stat-num{font-family:var(--font-serif);font-size:28px;color:#fff;margin-bottom:2px;}
+.stat-lbl{font-size:11px;color:var(--text2);line-height:1.3;}
+
+/* ── GRIDS ── */
+.grid{display:grid;gap:12px;}
+.g2{grid-template-columns:1fr 1fr;}
+.g3{grid-template-columns:repeat(3,1fr);}
+.g4{grid-template-columns:repeat(4,1fr);}
+
+/* ── CARDS ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.card:active{transform:scale(.98);}
+.card.dna-card{border-color:rgba(74,158,255,.3);}
+.card-num{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.05em;margin-bottom:8px;}
+.card-dna-badge{font-size:9px;font-weight:700;background:var(--blue);color:#fff;padding:2px 8px;border-radius:10px;white-space:nowrap;}
+.card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px;}
+.card-name{font-size:14px;font-weight:600;color:#fff;line-height:1.3;margin-bottom:6px;}
+.card-desc{font-size:12px;color:var(--text2);line-height:1.5;}
+.card-tag{display:inline-block;font-size:10px;padding:3px 8px;border-radius:8px;margin-top:10px;font-weight:500;}
+.card-cat{font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px;display:inline-block;margin-bottom:8px;letter-spacing:.04em;}
+.card-sig{font-size:9px;font-weight:700;background:linear-gradient(135deg,#c8a84b,#f5d87a);color:#1a1000;padding:2px 9px;border-radius:10px;margin-left:4px;}
+.card-short{font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.4;}
+.card-techs{display:flex;flex-wrap:wrap;gap:4px;}
+.card-tech{font-size:10px;background:var(--bg3);color:var(--text3);padding:2px 6px;border-radius:5px;}
+.card-tech.dna{background:var(--blue-dim);color:var(--blue);}
+
+/* ── DNA HERO BLOCK ── */
+.dna-hero{
+  background:linear-gradient(135deg,var(--bg3) 0%,var(--blue-dim) 100%);
+  border:1px solid rgba(74,158,255,.2);border-radius:var(--r);
+  padding:20px;margin-bottom:18px;
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;
+}
+.dna-item{padding:14px;background:rgba(255,255,255,.04);border-radius:10px;}
+.dna-icon{font-size:20px;margin-bottom:7px;}
+.dna-name{font-size:13px;font-weight:600;color:#fff;margin-bottom:3px;}
+.dna-desc{font-size:11px;color:var(--text2);line-height:1.4;}
+.dna-free{font-size:10px;font-weight:700;color:var(--blue);margin-top:5px;}
+
+/* ── TREAT CARD ── */
+.treat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:12px;}
+.tr-icon{font-size:26px;margin-bottom:10px;}
+.tr-name{font-size:16px;font-weight:600;color:#fff;margin-bottom:5px;}
+.tr-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px;display:inline-block;margin-bottom:10px;}
+.tr-desc{font-size:13px;color:var(--text2);line-height:1.6;}
+.tr-feats{margin-top:12px;display:flex;flex-direction:column;gap:6px;}
+.tr-feat{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--text2);}
+.tr-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+
+/* ── AR TIERS ── */
+.ar-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+.ar-tier{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;position:relative;overflow:hidden;}
+.ar-shine{position:absolute;top:0;right:0;width:60px;height:60px;border-radius:0 var(--r) 0 60px;opacity:.12;}
+.ar-name{font-size:15px;font-weight:600;color:#fff;margin-bottom:3px;}
+.ar-stars{font-size:16px;margin-bottom:8px;}
+.ar-feats{display:flex;flex-direction:column;gap:5px;}
+.ar-feat{font-size:11px;color:var(--text2);display:flex;gap:6px;align-items:flex-start;}
+.ar-dot{width:4px;height:4px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.ar-gar{margin-top:10px;font-size:10px;font-weight:600;padding:3px 9px;border-radius:7px;display:inline-block;}
+
+/* ── LENS FAMILY ── */
+.lens-family{margin-bottom:24px;}
+.lf-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.lf-line{flex:1;height:1px;background:var(--border);}
+.lf-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;}
+
+/* ── FILTER BAR ── */
+.filter-bar{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px;}
+.filter-btn{padding:7px 14px;font-size:12px;border:1px solid var(--border);border-radius:20px;background:transparent;color:var(--text2);cursor:pointer;font-family:var(--font);transition:all .15s;white-space:nowrap;}
+.filter-btn:active{transform:scale(.96);}
+.filter-btn.on{background:var(--blue-dim);border-color:rgba(74,158,255,.4);color:var(--blue);}
+
+/* ── SECTION LABEL ── */
+.sec-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;margin-bottom:10px;margin-top:20px;}
+.sec-lbl:first-child{margin-top:0;}
+
+/* ── HIGHLIGHT ── */
+.highlight{border-left:3px solid;padding:12px 16px;border-radius:0 var(--r-sm) var(--r-sm) 0;background:rgba(0,0,0,.2);margin-bottom:12px;}
+.highlight p{font-size:13px;line-height:1.6;}
+
+/* ── SIGNATURE ── */
+.sig-block{
+  background:linear-gradient(135deg,#0c1e3a 0%,#0a3d6b 50%,#1a5fa8 100%);
+  border:1px solid rgba(74,158,255,.3);border-radius:var(--r);padding:20px;margin-bottom:14px;
+}
+.sig-title{font-family:var(--font-serif);font-size:20px;color:#fff;margin-bottom:4px;}
+.sig-sub{font-size:12px;color:rgba(255,255,255,.6);margin-bottom:16px;line-height:1.5;}
+.sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.sig-item{background:rgba(255,255,255,.1);border-radius:8px;padding:12px 14px;}
+.sig-n{font-family:var(--font-serif);font-size:24px;color:#fff;margin-bottom:3px;}
+.sig-txt{font-size:11px;color:rgba(255,255,255,.7);line-height:1.4;}
+
+/* ── QUIZ ── */
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;}
+.quiz-prog{display:flex;gap:5px;margin-bottom:18px;}
+.qp-dot{flex:1;height:3px;border-radius:2px;background:var(--border2);transition:background .3s;}
+.qp-dot.done{background:var(--green);}
+.qp-dot.current{background:var(--blue);}
+.quiz-q{font-size:16px;font-weight:600;color:#fff;margin-bottom:16px;line-height:1.4;}
+.quiz-opts{display:flex;flex-direction:column;gap:9px;margin-bottom:16px;}
+.quiz-opt{
+  background:var(--bg3);border:1px solid var(--border);border-radius:10px;
+  padding:13px 16px;font-size:14px;color:var(--text2);cursor:pointer;
+  font-family:var(--font);text-align:left;transition:all .15s;
+  -webkit-user-select:none;user-select:none;
+}
+.quiz-opt:active{transform:scale(.98);}
+.quiz-opt.correct{background:var(--green-dim);border-color:var(--green);color:var(--green);}
+.quiz-opt.wrong{background:var(--coral-dim);border-color:var(--coral);color:var(--coral);}
+.quiz-opt:disabled{cursor:default;}
+.quiz-result{font-size:13px;padding:12px 14px;border-radius:8px;line-height:1.5;display:none;}
+.quiz-result.show{display:block;}
+.quiz-nav{display:flex;justify-content:space-between;align-items:center;margin-top:14px;}
+.quiz-score{font-size:12px;color:var(--text3);}
+.q-btn{padding:11px 22px;font-size:13px;font-weight:600;background:var(--blue2);color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:var(--font);}
+
+/* ── MODAL ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);}
+.modal-bg.open{display:flex;}
+.modal{
+  background:var(--card);border:1px solid var(--border2);
+  border-radius:20px 20px 0 0;
+  width:100%;max-height:90vh;overflow-y:auto;
+  padding:24px 20px 40px;position:relative;
+  animation:slideUp .28s cubic-bezier(.16,1,.3,1);
+}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.modal-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 18px;display:block;}
+.modal-close{position:absolute;top:16px;right:16px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;color:var(--text2);}
+.modal-cat{font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px;display:inline-block;margin-bottom:10px;letter-spacing:.04em;}
+.modal-name{font-family:var(--font-serif);font-size:22px;color:#fff;margin-bottom:10px;line-height:1.2;}
+.modal-desc{font-size:14px;color:var(--text2);line-height:1.65;margin-bottom:16px;}
+.modal-sec{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--text3);text-transform:uppercase;margin-bottom:8px;margin-top:16px;}
+.mti{background:var(--bg3);border-radius:8px;padding:10px 13px;margin-bottom:6px;}
+.mti-name{font-size:13px;font-weight:600;color:#fff;margin-bottom:2px;}
+.mti-desc{font-size:12px;color:var(--text2);line-height:1.45;}
+.mti-dna{background:var(--blue-dim);border:1px solid rgba(74,158,255,.2);}
+.mti-excl{background:var(--violet-dim);border:1px solid rgba(176,124,255,.2);}
+.mti-excl .mti-name{color:var(--violet);}
+
+/* ══════════════════════════════
+   BOTTOM NAV (mobile)
+══════════════════════════════ */
+.bottom-nav{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;
+  height:var(--bottom-nav-h);z-index:50;
+  background:#0b0e14;
+  border-top:1px solid rgba(255,255,255,.08);
+}
+
+.bnav-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:7px;border:none;background:transparent;
+  color:rgba(255,255,255,.3);cursor:pointer;font-family:var(--font);
+  padding:12px 4px;transition:color .2s;
+  -webkit-user-select:none;user-select:none;
+  min-width:0;
+}
+.bnav-btn.active{color:#fff;}
+.bnav-btn:active{opacity:.6;}
+.bnav-icon{font-size:26px;line-height:1;}
+.bnav-label{font-size:10px;font-weight:500;line-height:1;letter-spacing:.02em;}
+
+/* ══════════════════════════════
+   RESPONSIVE BREAKPOINTS
+   Sidebar só aparece em desktop (>=1024px)
+   Tudo abaixo = mobile/tablet com bottom nav
+══════════════════════════════ */
+
+/* ── MOBILE + TABLET (até 1023px) ── */
+@media(max-width:1023px){
+  .sidebar{display:none;}
+  .bottom-nav{display:flex;}
+  .main{padding-bottom:var(--bottom-nav-h);}
+  .page{padding:14px 14px 20px;}
+  .page-hero{margin-bottom:16px;}
+  .page-hero h1{font-size:22px;}
+  .page-hero p{font-size:13px;}
+  .stat-strip{grid-template-columns:1fr 1fr;gap:8px;}
+  .stat-num{font-size:24px;}
+  .stat{padding:12px 14px;}
+  .g2{grid-template-columns:1fr 1fr;}
+  .g3{grid-template-columns:1fr 1fr;}
+  .g4{grid-template-columns:1fr 1fr;}
+  .dna-hero{grid-template-columns:1fr;gap:8px;padding:16px;}
+  .ar-grid{grid-template-columns:1fr 1fr;}
+  .sig-grid{grid-template-columns:1fr 1fr;}
+  .modal{border-radius:20px 20px 0 0;max-height:92vh;}
+  .topbar{padding:0 14px;background:#0b0e14;border-bottom:1px solid rgba(255,255,255,.08);}
+  .topbar-title{font-size:15px;color:#fff;}
+  .search-input{font-size:14px;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12);color:#fff;}
+  .search-input::placeholder{color:rgba(255,255,255,.3);}
+  .search-icon{color:rgba(255,255,255,.3);}
+  .quiz-opt{padding:14px 16px;font-size:14px;}
+  .treat-card{padding:16px;}
+  .ar-tier{padding:14px;}
+  .card{padding:14px;}
+}
+
+/* ── CELULAR PEQUENO (até 520px) ── */
+@media(max-width:520px){
+  .page{padding:12px 12px 16px;}
+  .g2{grid-template-columns:1fr;}
+  .g3{grid-template-columns:1fr;}
+  .g4{grid-template-columns:1fr 1fr;}
+  .stat-strip{grid-template-columns:1fr 1fr;gap:7px;}
+  .dna-hero{grid-template-columns:1fr;}
+  .ar-grid{grid-template-columns:1fr 1fr;}
+  .sig-grid{grid-template-columns:1fr;}
+  .filter-btn{padding:7px 11px;font-size:11px;}
+  .page-hero h1{font-size:20px;}
+  .topbar-title{font-size:14px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .search-input{width:100%;}
+}
+
+/* ── TABLET LANDSCAPE / SMALL DESKTOP (769–1023px) ── */
+@media(min-width:769px) and (max-width:1023px){
+  .g3{grid-template-columns:1fr 1fr 1fr;}
+  .g4{grid-template-columns:1fr 1fr 1fr 1fr;}
+  .ar-grid{grid-template-columns:repeat(4,1fr);}
+  .dna-hero{grid-template-columns:1fr 1fr 1fr;}
+  .sig-grid{grid-template-columns:1fr 1fr;}
+  .page{padding:20px;}
+}
+
+/* safe area para iPhones com notch/dynamic island */
+.mobile-watermark{
+  display:none;
+  position:fixed;bottom:calc(var(--bottom-nav-h) + 6px);left:12px;
+  font-size:9px;font-weight:600;color:rgba(255,255,255,.15);
+  letter-spacing:.06em;text-transform:uppercase;z-index:39;
+  pointer-events:none;
+}
+@media(max-width:1023px){.mobile-watermark{display:block;}}
+@supports(padding-bottom:env(safe-area-inset-bottom)){
+  .bottom-nav{
+    padding-bottom:env(safe-area-inset-bottom);
+    height:calc(var(--bottom-nav-h) + env(safe-area-inset-bottom));
+  }
+  .main{
+    padding-bottom:calc(var(--bottom-nav-h) + env(safe-area-inset-bottom));
+  }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ══════ DESKTOP SIDEBAR ══════ -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-brand">ZEISS</div>
+    <div class="sb-tag">Portal de Treinamento</div>
+  </div>
+  <div class="sb-section">
+    <div class="sb-sec-label">Conteúdo</div>
+    <button class="nav-btn active" onclick="go('home',this)"><span class="nav-icon">⌂</span>Início</button>
+    <button class="nav-btn" onclick="go('dna',this)"><span class="nav-icon">◈</span>DNA ZEISS<span class="nav-count">3</span></button>
+    <button class="nav-btn" onclick="go('tecnologias',this)"><span class="nav-icon">◎</span>Tecnologias<span class="nav-count">14</span></button>
+    <button class="nav-btn" onclick="go('lentes',this)"><span class="nav-icon">◉</span>Lentes<span class="nav-count">22</span></button>
+    <button class="nav-btn" onclick="go('tratamentos',this)"><span class="nav-icon">✦</span>Tratamentos<span class="nav-count">6</span></button>
+    <button class="nav-btn" onclick="go('signature',this)"><span class="nav-icon">★</span>Signature</button>
+  </div>
+  <div class="sb-section">
+    <div class="sb-sec-label">Praticar</div>
+    <button class="nav-btn" onclick="go('quiz',this)"><span class="nav-icon">✎</span>Quiz</button>
+  </div>
+  <div class="sb-footer">
+    ZEISS Vision Care<br>Material interno — equipe de vendas
+    <div class="sb-brand-tag">
+      <div class="sb-brand-dot"></div>
+      <span class="sb-brand-name">by ZVC Guarujá</span>
+    </div>
+  </div>
+</aside>
+
+<!-- ══════ MAIN ══════ -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-title" id="topbar-title">Início</div>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="srch" placeholder="Buscar..." oninput="doSearch(this.value)">
+    </div>
+  </div>
+
+  <!-- ── HOME ── -->
+  <div class="page active" id="page-home">
+    <div class="page-hero">
+      <h1>Portal ZEISS</h1>
+      <p>Guia completo de tecnologias, lentes e tratamentos. Estude no seu ritmo.</p>
+    </div>
+    <div class="stat-strip">
+      <div class="stat"><div class="stat-num">14</div><div class="stat-lbl">Tecnologias</div></div>
+      <div class="stat"><div class="stat-num">22</div><div class="stat-lbl">Lentes</div></div>
+      <div class="stat"><div class="stat-num">6</div><div class="stat-lbl">Tratamentos</div></div>
+      <div class="stat"><div class="stat-num">4</div><div class="stat-lbl">Benefícios Signature</div></div>
+    </div>
+    <div class="dna-hero">
+      <div class="dna-item"><div class="dna-icon">🛡️</div><div class="dna-name">FreeForm</div><div class="dna-desc">Visão nítida sem distorções. Adaptação rápida.</div><div class="dna-free">▸ DNA ZEISS — sem custo</div></div>
+      <div class="dna-item"><div class="dna-icon">☀️</div><div class="dna-name">UVProtect</div><div class="dna-desc">Bloqueio UV total até 400nm.</div><div class="dna-free">▸ DNA ZEISS — sem custo</div></div>
+      <div class="dna-item"><div class="dna-icon">📱</div><div class="dna-name">BlueGuard</div><div class="dna-desc">40% de bloqueio de luz azul nociva.</div><div class="dna-free">▸ DNA ZEISS — sem custo</div></div>
+    </div>
+    <div class="sec-lbl">Navegar por categoria</div>
+    <div class="grid g2">
+      <div class="card" onclick="go('tecnologias')" style="border-color:rgba(74,158,255,.3);">
+        <div style="font-size:28px;margin-bottom:10px;">◎</div>
+        <div class="card-name">Tecnologias</div>
+        <div class="card-desc">As 14 tecnologias — da IA à NeurOptix.</div>
+        <div class="card-tag" style="background:var(--blue-dim);color:var(--blue);">14 tecnologias →</div>
+      </div>
+      <div class="card" onclick="go('lentes')" style="border-color:rgba(46,232,192,.2);">
+        <div style="font-size:28px;margin-bottom:10px;">◉</div>
+        <div class="card-name">Portfólio</div>
+        <div class="card-desc">Acabadas, surfaçadas, progressivas, ClearMind e especiais.</div>
+        <div class="card-tag" style="background:var(--teal-dim);color:var(--teal);">22 lentes →</div>
+      </div>
+      <div class="card" onclick="go('tratamentos')" style="border-color:rgba(240,192,64,.2);">
+        <div style="font-size:28px;margin-bottom:10px;">✦</div>
+        <div class="card-name">Tratamentos</div>
+        <div class="card-desc">DuraVision Chrome até Gold. Photofusion X.</div>
+        <div class="card-tag" style="background:var(--gold-dim);color:var(--gold);">AR + Fotossensível →</div>
+      </div>
+      <div class="card" onclick="go('quiz')" style="border-color:rgba(176,124,255,.2);">
+        <div style="font-size:28px;margin-bottom:10px;">✎</div>
+        <div class="card-name">Quiz</div>
+        <div class="card-desc">Teste seus conhecimentos com 10 perguntas.</div>
+        <div class="card-tag" style="background:var(--violet-dim);color:var(--violet);">Iniciar →</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DNA ZEISS ── -->
+  <div class="page" id="page-dna">
+    <div class="page-hero">
+      <h1>DNA ZEISS</h1>
+      <p>Presentes em <strong>todas</strong> as lentes, sem custo adicional.</p>
+    </div>
+    <div class="highlight" style="border-color:var(--blue);background:var(--blue-dim);">
+      <p style="color:var(--text);">💡 <strong>Na venda:</strong> "Qualquer lente que você escolher já vem com UV total, filtro de luz azul e precisão óptica — sem pagar nada a mais."</p>
+    </div>
+    <div class="grid g3">
+      <div class="treat-card" style="border-color:rgba(74,158,255,.3);">
+        <div class="tr-icon">🔬</div><div class="tr-name">FreeForm</div>
+        <div class="tr-badge" style="background:var(--blue-dim);color:var(--blue);">DNA ZEISS</div>
+        <div class="tr-desc">Tecnologia de fabricação de alta precisão. Visão mais nítida e sem distorções em toda a lente. Adaptação rápida.</div>
+        <div class="tr-feats">
+          <div class="tr-feat"><div class="tr-dot" style="background:var(--blue);"></div>Em todos os produtos ZEISS</div>
+          <div class="tr-feat"><div class="tr-dot" style="background:var(--blue);"></div>Sem custo adicional</div>
+          <div class="tr-feat"><div class="tr-dot" style="background:var(--blue);"></div>Adaptação mais rápida</div>
+        </div>
+      </div>
+      <div class="treat-card" style="border-color:rgba(240,192,64,.2);">
+        <div class="tr-icon">☀️</div><div class="tr-name">UVProtect</div>
+        <div class="tr-badge" style="background:var(--gold-dim);color:var(--gold);">DNA ZEISS</div>
+        <div class="tr-desc">Maior proteção UV do mercado. Bloqueia 100% dos raios UV até 400nm. Previne catarata e degeneração macular.</div>
+        <div class="tr-feats">
+          <div class="tr-feat"><div class="tr-dot" style="background:var(--gold);"></div>Bloqueio 100% até 400nm</div>
+          <div class="tr-feat"><div class="tr-dot" style="background:var(--gold);"></div>Frente e traseira da lente</div>
+          <div class="tr-feat"><div class="tr-dot" style="background:var(--gold);"></div>Sem custo adicional</div>
+        </div>
+      </div>
+      <div class="treat-card" style="border-color:rgba(93,216,122,.2);">
+        <div class="tr-icon">💻</div><div class="tr-name">BlueGuard</div>
+        <div class="tr-badge" style="background:var(--green-dim);color:var(--green);">DNA ZEISS</div>
+        <div class="tr-desc">Proteção contra luz azul nociva de telas digitais. Bloqueia 40% da luz violeta. Reduz fadiga e melhora sono.</div>
+        <div class="tr-feats">
+          <div class="tr-feat"><div class="tr-dot" style="background:var(--green);"></div>40% de bloqueio de luz violeta</div>
+          <div class="tr-feat"><div class="tr-dot" style="background:var(--green);"></div>Integrado na fabricação</div>
+          <div class="tr-feat"><div class="tr-dot" style="background:var(--green);"></div>Sem custo adicional</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TECNOLOGIAS ── -->
+  <div class="page" id="page-tecnologias">
+    <div class="page-hero">
+      <h1>13 Tecnologias</h1>
+      <p>Toque em qualquer card para detalhes. <span style="background:var(--blue);color:#fff;font-size:10px;padding:1px 6px;border-radius:6px;font-weight:700;">DNA</span> = incluso em todas as lentes.</p>
+    </div>
+    <div class="grid g3" id="tech-grid"></div>
+  </div>
+
+  <!-- ── LENTES ── -->
+  <div class="page" id="page-lentes">
+    <div class="page-hero">
+      <h1>Portfólio</h1>
+      <p>15 lentes organizadas por família. Toque para ver detalhes completos.</p>
+    </div>
+    <div class="filter-bar">
+      <button class="filter-btn on" onclick="filtL('all',this)">Todas</button>
+      <button class="filter-btn" onclick="filtL('acabada',this)">Acabada</button>
+      <button class="filter-btn" onclick="filtL('surfacada',this)">Surfaçada</button>
+      <button class="filter-btn" onclick="filtL('progressiva',this)">Progressiva</button>
+      <button class="filter-btn" onclick="filtL('clearmind',this)" style="border-color:rgba(176,124,255,.4);color:var(--violet);">🧠 ClearMind</button>
+      <button class="filter-btn" onclick="filtL('especial',this)">Especial</button>
+    </div>
+    <div id="lenses-container"></div>
+  </div>
+
+  <!-- ── TRATAMENTOS ── -->
+  <div class="page" id="page-tratamentos">
+    <div class="page-hero">
+      <h1>Tratamentos</h1>
+      <p>Antirreflexos DuraVision e Photofusion X Extra Dark.</p>
+    </div>
+    <div class="sec-lbl">Antirreflexos DuraVision</div>
+    <div class="ar-grid">
+      <div class="ar-tier" style="border-color:#4a5568;">
+        <div class="ar-shine" style="background:#888;"></div>
+        <div class="ar-name">Chrome</div><div class="ar-stars">⭑☆☆☆</div>
+        <div class="ar-feats">
+          <div class="ar-feat"><div class="ar-dot" style="background:#888;"></div>Fácil limpeza</div>
+          <div class="ar-feat"><div class="ar-dot" style="background:#888;"></div>Resistência básica</div>
+          <div class="ar-feat"><div class="ar-dot" style="background:#888;"></div>Entrada de linha</div>
+        </div>
+        <div class="ar-gar" style="background:rgba(136,136,136,.15);color:#888;">⏱ 1 ano</div>
+      </div>
+      <div class="ar-tier" style="border-color:#8a9ab8;">
+        <div class="ar-shine" style="background:#c0cce0;"></div>
+        <div class="ar-name">Silver</div><div class="ar-stars">⭑⭑☆☆</div>
+        <div class="ar-feats">
+          <div class="ar-feat"><div class="ar-dot" style="background:#a0b4c8;"></div>Residual transparente</div>
+          <div class="ar-feat"><div class="ar-dot" style="background:#a0b4c8;"></div>Fácil limpeza</div>
+          <div class="ar-feat"><div class="ar-dot" style="background:#a0b4c8;"></div>+ Chrome</div>
+        </div>
+        <div class="ar-gar" style="background:rgba(160,180,200,.15);color:#a0b4c8;">⏱ 1 ano</div>
+      </div>
+      <div class="ar-tier" style="border-color:rgba(74,158,255,.4);">
+        <div class="ar-shine" style="background:var(--blue);"></div>
+        <div class="ar-name" style="color:var(--blue);">Platinum</div><div class="ar-stars">⭑⭑⭑☆</div>
+        <div class="ar-feats">
+          <div class="ar-feat"><div class="ar-dot" style="background:var(--blue);"></div>Alta resistência a arranhões</div>
+          <div class="ar-feat"><div class="ar-dot" style="background:var(--blue);"></div>Residual transparente</div>
+          <div class="ar-feat"><div class="ar-dot" style="background:var(--blue);"></div>+ Silver</div>
+        </div>
+        <div class="ar-gar" style="background:var(--blue-dim);color:var(--blue);">⏱ 2 anos</div>
+      </div>
+      <div class="ar-tier" style="border-color:rgba(240,192,64,.4);">
+        <div class="ar-shine" style="background:var(--gold);"></div>
+        <div class="ar-name" style="color:var(--gold);">Gold</div><div class="ar-stars">⭑⭑⭑⭑</div>
+        <div class="ar-feats">
+          <div class="ar-feat"><div class="ar-dot" style="background:var(--gold);"></div>Estética dourada</div>
+          <div class="ar-feat"><div class="ar-dot" style="background:var(--gold);"></div>Público feminino ♀</div>
+          <div class="ar-feat"><div class="ar-dot" style="background:var(--gold);"></div>+ Platinum</div>
+        </div>
+        <div class="ar-gar" style="background:var(--gold-dim);color:var(--gold);">⏱ 2 anos</div>
+      </div>
+    </div>
+    <div class="highlight" style="border-color:var(--gold);margin-top:4px;">
+      <p style="color:var(--text2);">💡 <strong style="color:var(--text);">Gold:</strong> O residual dourado é bem aceito pelo público feminino — apresente como diferencial estético além da qualidade Platinum.</p>
+    </div>
+    <div class="sec-lbl" style="margin-top:20px;">Tratamento Fotossensível</div>
+    <div class="treat-card" style="border-color:rgba(255,112,85,.3);">
+      <div class="tr-icon">🌤️</div>
+      <div class="tr-name">Photofusion X Extra Dark</div>
+      <div class="tr-badge" style="background:var(--coral-dim);color:var(--coral);">Todo o portfólio</div>
+      <div class="tr-desc">Torna qualquer lente sensível aos raios UV, escurecendo automaticamente no sol. Versão Extra Dark — máximo escurecimento. Clareia rapidamente ao voltar para ambientes internos.</div>
+      <div class="tr-feats">
+        <div class="tr-feat"><div class="tr-dot" style="background:var(--coral);"></div>Ativação por raios UV</div>
+        <div class="tr-feat"><div class="tr-dot" style="background:var(--coral);"></div>Versão Extra Dark — máximo escurecimento</div>
+        <div class="tr-feat"><div class="tr-dot" style="background:var(--coral);"></div>Disponível em todas as lentes ZEISS</div>
+        <div class="tr-feat"><div class="tr-dot" style="background:var(--coral);"></div>Combinável com qualquer AR (exceto DriveSafe)</div>
+      </div>
+    </div>
+    <div class="highlight" style="border-color:rgba(255,112,85,.4);margin-top:4px;">
+      <p style="color:var(--text2);">⚠️ <strong style="color:var(--text);">DriveSafe:</strong> Usa tratamento exclusivo DuraVision DriveSafe — não combina com Chrome, Silver, Platinum ou Gold.</p>
+    </div>
+  </div>
+
+  <!-- ── SIGNATURE ── -->
+  <div class="page" id="page-signature">
+    <div class="page-hero">
+      <h1>ZEISS Signature</h1>
+      <p>Lentes com <strong>INDIVIDUAL</strong> no nome — 4 benefícios exclusivos inclusos.</p>
+    </div>
+    <div class="sig-block">
+      <div class="sig-title">ZEISS Signature</div>
+      <div class="sig-sub">Todas as lentes com <strong>INDIVIDUAL</strong> no nome + ClearMind Individual 3 · ClearMind Digital Individual 3 · OfficeLens Individual · DriveSafe Individual · Sport Individual</div>
+      <div class="sig-grid">
+        <div class="sig-item"><div class="sig-n">01</div><div class="sig-txt">Par de lentes Individual grátis após 3 meses</div></div>
+        <div class="sig-item"><div class="sig-n">02</div><div class="sig-txt">Voucher 50% OFF para presentear alguém</div></div>
+        <div class="sig-item"><div class="sig-n">03</div><div class="sig-txt">Garantia de preço por 2 anos</div></div>
+        <div class="sig-item"><div class="sig-n">04</div><div class="sig-txt">Consulta gratuita com visagista</div></div>
+      </div>
+    </div>
+    <div class="highlight" style="border-color:rgba(200,168,75,.5);background:rgba(200,168,75,.08);">
+      <p style="color:var(--text2);">💡 <strong style="color:var(--text);">Como apresentar:</strong> "Você leva a melhor lente e ainda ganha: par grátis em 3 meses, 50% para presentear, preço garantido por 2 anos e consultoria de imagem gratuita."</p>
+    </div>
+    <div class="sec-lbl" style="margin-top:20px;">Lentes participantes</div>
+    <div class="grid g3" id="sig-grid"></div>
+  </div>
+
+  <!-- ── QUIZ ── -->
+  <div class="page" id="page-quiz">
+    <div class="page-hero">
+      <h1>Quiz</h1>
+      <p>10 perguntas sobre tecnologias e produtos ZEISS.</p>
+    </div>
+    <div class="quiz-card" id="quiz-card">
+      <div class="quiz-prog" id="quiz-prog"></div>
+      <div class="quiz-q" id="quiz-q"></div>
+      <div class="quiz-opts" id="quiz-opts"></div>
+      <div class="quiz-result" id="quiz-result"></div>
+      <div class="quiz-nav">
+        <div class="quiz-score" id="quiz-score"></div>
+        <button class="q-btn" id="quiz-next" onclick="qNext()" style="display:none;">Próxima →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SEARCH ── -->
+  <div class="page" id="page-search">
+    <div class="page-hero"><h1>Busca</h1></div>
+    <div id="search-results"></div>
+  </div>
+
+</main><!-- /main -->
+
+<!-- ══════ MOBILE BOTTOM NAV ══════ -->
+<nav class="bottom-nav">
+  <button class="bnav-btn active" id="bnav-home" onclick="go('home',this,'bnav')"><span class="bnav-icon">⌂</span><span class="bnav-label">Início</span></button>
+  <button class="bnav-btn" id="bnav-tecnologias" onclick="go('tecnologias',this,'bnav')"><span class="bnav-icon">◎</span><span class="bnav-label">Tecnol.</span></button>
+  <button class="bnav-btn" id="bnav-lentes" onclick="go('lentes',this,'bnav')"><span class="bnav-icon">◉</span><span class="bnav-label">Lentes</span></button>
+  <button class="bnav-btn" id="bnav-tratamentos" onclick="go('tratamentos',this,'bnav')"><span class="bnav-icon">✦</span><span class="bnav-label">Tratam.</span></button>
+  <button class="bnav-btn" id="bnav-quiz" onclick="go('quiz',this,'bnav')"><span class="bnav-icon">✎</span><span class="bnav-label">Quiz</span></button>
+</nav>
+
+  <div class="mobile-watermark">by ZVC Guarujá</div>
+</div><!-- /shell -->
+
+<!-- ══════ MODAL ══════ -->
+<div class="modal-bg" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════ DATA ═══════════════════════
+const T={
+  1:{name:'Design ZEISS com IA',short:'IA adapta a lente ao seu olho',desc:'A ZEISS usa inteligência artificial para criar lentes que se adaptam individualmente aos seus olhos, oferecendo visão clara e precisa onde quer que você olhe.',dna:false,color:'blue'},
+  2:{name:'IndividualFit',short:'Você escolhe seu tipo de visão',desc:'Escolha o tipo de visão que mais usa: perto, meio termo ou equilibrado. Perfeito para rotina variada.',dna:false,color:'teal'},
+  3:{name:'FaceFit Technology',short:'Ajustada ao seu rosto',desc:'Ajusta a lente ao formato do rosto, modo de uso e armação, garantindo visão personalizada.',dna:false,color:'teal'},
+  4:{name:'FrameFit Technology',short:'Adaptada à armação',desc:'Considera o tamanho dos óculos e uso anterior, facilitando a adaptação e otimizando a visão de perto.',dna:false,color:'green'},
+  5:{name:'Adaptation Control',short:'Troca sem desconforto',desc:'Facilita a troca de lentes, tornando a adaptação mais rápida e os movimentos dos olhos mais naturais.',dna:false,color:'green'},
+  6:{name:'Luminance Design 2.0',short:'Visão na luz e no escuro',desc:'Adapta a lente às condições de luz e à faixa etária, facilitando a visão noturna e em ambientes escuros.',dna:false,color:'gold'},
+  7:{name:'Digital Inside',short:'Nitidez para o que está perto',desc:'Nitidez absoluta para distâncias próximas — celular, livro, documentos — sem forçar os olhos.',dna:false,color:'blue'},
+  8:{name:'ZEISS SmartView 2.0',short:'Sem zonas embaçadas',desc:'Lentes que entendem como os olhos se movem, eliminando zonas embaçadas nas bordas laterais.',dna:false,color:'teal'},
+  9:{name:'Óptica Dinâmica Inteligente',short:'Foco rápido em qualquer distância',desc:'Ajuda os olhos a focar com facilidade em diferentes distâncias — do celular ao horizonte — com transições suaves.',dna:false,color:'green'},
+  10:{name:'Visão Binocular',short:'Nítido em todas as direções',desc:'Otimiza a visão lateral para enxergar claramente sem distorções em todas as direções do campo visual.',dna:false,color:'blue'},
+  11:{name:'FreeForm',short:'Precisão óptica de fábrica',desc:'Tecnologia de fabricação de alta precisão. Visão mais nítida e sem distorções. Adaptação rápida. Incluso em todas as lentes ZEISS sem custo adicional.',dna:true,color:'blue'},
+  12:{name:'UVProtect',short:'Máxima proteção UV',desc:'Bloqueia 100% dos raios UV até 400nm. Maior proteção do mercado. Previne catarata e degeneração macular. Incluso sem custo.',dna:true,color:'gold'},
+  13:{name:'BlueGuard',short:'Filtro de luz azul nociva',desc:'Bloqueia 40% da luz azul nociva de telas digitais. Reduz fadiga ocular e melhora qualidade do sono. Incluso sem custo.',dna:true,color:'green'},
+  14:{name:'NeurOptix',short:'Reduz carga cognitiva — tecnologia ClearMind',desc:'Tecnologia patenteada ZEISS que alinha as zonas de clareza da lente aos padrões naturais de movimento dos olhos, proporcionando até 41% mais área de visão clara. Reduz a carga cognitiva do cérebro, oferecendo experiência visual relaxada e sem esforço. Presente exclusivamente nas lentes ClearMind.',dna:false,color:'violet'},
+};
+const CS={
+  acabada:{l:'Acabada',bg:'rgba(93,216,122,.15)',c:'#5dd87a'},
+  surfacada:{l:'Surfaçada',bg:'rgba(74,158,255,.15)',c:'#4a9eff'},
+  progressiva:{l:'Progressiva',bg:'rgba(240,192,64,.15)',c:'#f0c040'},
+  clearmind:{l:'ClearMind 🧠',bg:'rgba(176,124,255,.15)',c:'#b07cff'},
+  especial:{l:'Especial',bg:'rgba(255,112,85,.15)',c:'#ff7055'},
+};
+const CM={blue:'var(--blue)',teal:'var(--teal)',gold:'var(--gold)',green:'var(--green)',violet:'var(--violet)',coral:'var(--coral)'};
+const DM={blue:'var(--blue-dim)',teal:'var(--teal-dim)',gold:'var(--gold-dim)',green:'var(--green-dim)',violet:'var(--violet-dim)',coral:'var(--coral-dim)'};
+
+const L=[
+  {id:'ac1',cat:'acabada',name:'Monofocal Acabada ClearView',short:'Tecnologia ClearView — lente mais plana',
+   desc:'Possuem a tecnologia ClearView que torna a lente mais plana, reduzindo distorções. Excelente custo-benefício para graus padrão.',
+   techs:[11,12,13],extra:['ClearView Technology — lente mais plana, menos distorção'],ar:['Chrome','Silver','Platinum','Gold'],sig:false,
+   ideal:'Graus dentro da faixa padrão. Ótimo custo-benefício.'},
+  {id:'sv1',cat:'surfacada',name:'Visão Simples ZEISS Light 2',short:'Surfaçada entrada de linha',
+   desc:'Monofocal surfaçada com DNA ZEISS. Indicada para dioptrias mais altas ou diâmetros maiores.',
+   techs:[11,12,13],extra:[],ar:['Chrome','Silver','Platinum','Gold'],sig:false,
+   ideal:'Dioptrias mais altas ou diâmetros maiores.'},
+  {id:'sv2',cat:'surfacada',name:'Visão Simples ZEISS SmartLife',short:'Otimizada para era digital',
+   desc:'Com SmartView e Visão Binocular para reduzir fadiga digital e visão clara em todas as direções.',
+   techs:[6,8,10,11,12,13],extra:[],ar:['Chrome','Silver','Platinum','Gold'],sig:false,
+   ideal:'Adultos com uso intenso de telas.'},
+  {id:'sv3',cat:'surfacada',name:'Visão Simples ZEISS Individual',short:'Personalização máxima — Signature',
+   desc:'Maior nível de personalização com IA, FaceFit e Luminance Design. Participante do ZEISS Signature.',
+   techs:[1,3,6,8,10,11,12,13],extra:[],ar:['Chrome','Silver','Platinum','Gold'],sig:true,
+   ideal:'Clientes exigentes. Máxima personalização + Signature.'},
+  {id:'pl1',cat:'progressiva',name:'Progressiva Light 2 D',short:'Progressiva essencial',
+   desc:'Entrada de linha com Luminance Design 2.0 e Visão Binocular.',
+   techs:[6,10,11,12,13],extra:[],ar:['Chrome','Silver','Platinum','Gold'],sig:false,
+   ideal:'Presbiopia inicial.'},
+  {id:'pl2',cat:'progressiva',name:'Progressiva Light 2 3D',short:'Light + Digital Inside',
+   desc:'Light com Digital Inside para nitidez em distâncias próximas.',
+   techs:[6,7,10,11,12,13],extra:[],ar:['Chrome','Silver','Platinum','Gold'],sig:false,
+   ideal:'Presbiopia com uso moderado de telas.'},
+  {id:'pl3',cat:'progressiva',name:'Progressiva Light 2 3Dv',short:'Light + Digital + FrameFit + Adaptation',
+   desc:'Versão completa da linha Light com FrameFit e Adaptation Control.',
+   techs:[4,5,6,7,10,11,12,13],extra:[],ar:['Chrome','Silver','Platinum','Gold'],sig:false,
+   ideal:'Presbiopia com necessidade de adaptação rápida.'},
+  {id:'ps1',cat:'progressiva',name:'Progressiva SmartLife Essential',short:'SmartLife entrada',
+   desc:'Foco digital, óptica dinâmica e SmartView. Conforto visual moderno.',
+   techs:[7,8,9,10,11,12,13],extra:[],ar:['Chrome','Silver','Platinum','Gold'],sig:false,
+   ideal:'Presbiopia com rotina digital.'},
+  {id:'ps2',cat:'progressiva',name:'Progressiva SmartLife Pure',short:'SmartLife + Luminance noturno',
+   desc:'Essential + Luminance Design 2.0 para conforto noturno.',
+   techs:[6,7,8,9,10,11,12,13],extra:[],ar:['Chrome','Silver','Platinum','Gold'],sig:false,
+   ideal:'Presbiopia digital + visão noturna.'},
+  {id:'ps3',cat:'progressiva',name:'Progressiva SmartLife Plus',short:'SmartLife + FrameFit + Adaptation',
+   desc:'Pure com FrameFit e Adaptation Control.',
+   techs:[4,5,6,7,8,9,10,11,12,13],extra:[],ar:['Chrome','Silver','Platinum','Gold'],sig:false,
+   ideal:'Presbiopia digital com adaptação rápida.'},
+  {id:'ps4',cat:'progressiva',name:'Progressiva SmartLife Superb',short:'SmartLife + FaceFit completa',
+   desc:'Plus com FaceFit Technology para personalização facial completa.',
+   techs:[3,4,5,6,7,8,9,10,11,12,13],extra:[],ar:['Chrome','Silver','Platinum','Gold'],sig:false,
+   ideal:'Presbiopia exigente com personalização facial.'},
+  {id:'ps5',cat:'progressiva',name:'Progressiva SmartLife Individual 3',short:'Todas as 14 tecnologias — Signature',
+   desc:'A progressiva SmartLife mais completa. IA, IndividualFit, FaceFit, e todas as tecnologias. ZEISS Signature.',
+   techs:[1,2,3,4,5,6,7,8,9,10,11,12,13],extra:[],ar:['Chrome','Silver','Platinum','Gold'],sig:true,
+   ideal:'O máximo absoluto em progressiva SmartLife.'},
+  {id:'es1',cat:'especial',name:'SmartLife Digital Individual 3',short:'Para usuários de telas — Signature',
+   desc:'Para quem passa horas em telas sem precisar de progressiva. IA, FaceFit e Digital Inside.',
+   techs:[1,3,4,5,6,7,8,9,11,12,13],extra:[],ar:['Chrome','Silver','Platinum','Gold'],sig:true,
+   ideal:'Jovens/adultos com uso intenso de telas.'},
+  {id:'es2',cat:'especial',name:'ZEISS DriveSafe Individual',short:'Exclusiva para motoristas — Signature',
+   desc:'Design para painel e retrovisores. DuraVision DriveSafe reduz ofuscamento de faróis. Versão Individual participa do Signature.',
+   techs:[3,6,11,12],
+   extra:['DriveSafe Design — visão do painel e retrovisores','DuraVision DriveSafe — reduz ofuscamento de faróis'],
+   ar:['DuraVision DriveSafe (exclusivo — não combina com Chrome/Silver/Platinum/Gold)'],sig:true,
+   ideal:'Motoristas frequentes, especialmente à noite.'},
+  {id:'es3',cat:'especial',name:'ZEISS Sport Individual',short:'Alta performance esportiva — Signature',
+   desc:'Cosmetic Edge Technology reduz espessura das bordas em até 30% em lentes negativas. Versão Individual participa do Signature.',
+   techs:[3,11,12],
+   extra:['Cosmetic Edge Technology — reduz espessura das bordas em até 30%'],
+   ar:['Chrome','Silver','Platinum','Gold'],sig:true,
+   ideal:'Esportistas com graus negativos elevados.'},
+  {id:'es4',cat:'especial',name:'ZEISS EnergizeMe',short:'Para usuários de lente de contato',
+   desc:'Alivia tensão ocular após remoção das lentes de contato. Adição de 0,40 dioptrias.',
+   techs:[7,11,12,13],
+   extra:['EnergizeMe Design — formato especial + adição +0,40D'],
+   ar:['Antivírus Platinum','Platinum'],sig:false,
+   ideal:'Quem alterna entre lentes de contato e óculos.'},
+  {id:'es5',cat:'especial',name:'OfficeLens Individual',short:'Visão ideal para ambientes de trabalho — Signature',
+   desc:'Lente progressiva para ambientes de escritório. Visão clara de perto até 4m. Perfis Individual, Near e Room. Participa do Signature.',
+   techs:[3,4,7,11,12,13],
+   extra:['Perfil Individual — ajusta distância 1 a 4m','Perfil Near — foco na mesa','Perfil Room — visão em toda sala'],
+   ar:['Chrome','Silver','Platinum','Gold'],sig:true,
+   ideal:'Quem passa horas no computador ou em ambientes fechados.'},
+  // ── CLEARMIND ──
+  {id:'cm1',cat:'clearmind',name:'ClearMind Visão Simples Individual 3',short:'Primeira lente a reduzir fadiga mental — Signature',
+   desc:'Lente de visão simples premium com tecnologia NeurOptix. Até 48% mais área de visão clara que lentes convencionais. Reduz carga cognitiva. Participante do ZEISS Signature. Venda exclusiva ZEISS Vision Center e Vision Expert.',
+   techs:[1,3,4,6,8,9,11,12,13,14],extra:['NeurOptix — alinha zonas de clareza ao movimento natural dos olhos','Até 48% mais área de visão clara'],
+   ar:['Chrome','Silver','Platinum','Gold'],sig:true,
+   ideal:'18+ anos. Quem busca visão nítida e bem-estar mental. Máxima tecnologia.'},
+  {id:'cm2',cat:'clearmind',name:'ClearMind Digital Individual 3',short:'Reduz fadiga digital — pré-presbitas — Signature',
+   desc:'Para pessoas 35+ com primeiros sinais de envelhecimento visual. Até 28% mais área nítida para perto. NeurOptix reduz carga cognitiva. Adição 0,50 a 1,25. Participante do ZEISS Signature.',
+   techs:[1,3,4,5,6,7,8,9,11,12,13,14],extra:['NeurOptix — reduz carga cognitiva','Digital Inside — nitidez de perto','Até 28% mais área de visão clara para perto'],
+   ar:['Chrome','Silver','Platinum','Gold'],sig:true,
+   ideal:'35+ anos. Pré-presbitas. Intenso uso de telas e leitura.'},
+  {id:'cm3',cat:'clearmind',name:'ClearMind Individual 3',short:'Progressiva premium — menos desfoque — Signature',
+   desc:'Progressiva ClearMind de maior nível. Até 30% menos desfoque nas bordas. NeurOptix + IA + personalização total. Participante do ZEISS Signature. Venda exclusiva Vision Center e Vision Expert.',
+   techs:[1,2,3,4,5,6,7,8,9,10,11,12,13,14],extra:['NeurOptix — reduz carga cognitiva e desfoque','Até 30% menos desfoque nas laterais','Maior personalização da família ClearMind'],
+   ar:['Chrome','Silver','Platinum','Gold'],sig:true,
+   ideal:'45+ anos. O máximo absoluto em progressiva. Clientes premium.'},
+  {id:'cm4',cat:'clearmind',name:'ClearMind Superb',short:'Progressiva ClearMind personalizada',
+   desc:'Progressiva ClearMind com design que respeita anatomia facial. Campo de visão ampliado, NeurOptix e até 30% menos desfoque nas bordas.',
+   techs:[3,4,5,6,7,8,9,10,11,12,13,14],extra:['NeurOptix — reduz carga cognitiva','Até 30% menos desfoque nas laterais'],
+   ar:['Chrome','Silver','Platinum','Gold'],sig:false,
+   ideal:'45+ anos. Presbiopia exigente com tecnologia ClearMind.'},
+  {id:'cm5',cat:'clearmind',name:'ClearMind Plus',short:'Progressiva ClearMind avançada',
+   desc:'Progressiva ClearMind com adaptação rápida a qualquer armação. NeurOptix e FrameFit.',
+   techs:[4,5,6,7,8,9,10,11,12,13,14],extra:['NeurOptix — reduz carga cognitiva','Até 30% menos desfoque nas laterais'],
+   ar:['Chrome','Silver','Platinum','Gold'],sig:false,
+   ideal:'45+ anos. Presbiopia digital com adaptação rápida.'},
+  {id:'cm6',cat:'clearmind',name:'ClearMind Pure',short:'Progressiva ClearMind alta performance',
+   desc:'Progressiva ClearMind otimizada por idade e diâmetro de pupila. NeurOptix e Luminance Design 2.0.',
+   techs:[6,7,8,9,10,11,12,13,14],extra:['NeurOptix — reduz carga cognitiva','Até 30% menos desfoque nas laterais'],
+   ar:['Chrome','Silver','Platinum','Gold'],sig:false,
+   ideal:'45+ anos. Alta performance visual com precisão personalizada.'},
+];
+
+// ═══════════════════════ RENDER TECHS ═══════════════════════
+function renderTechs(){
+  document.getElementById('tech-grid').innerHTML=
+    Object.entries(T).map(([k,t])=>{
+      const c=CM[t.color]||'var(--blue)',d=DM[t.color]||'var(--blue-dim)';
+      return `<div class="card${t.dna?' dna-card':''}" onclick="openTech(${k})" style="${t.dna?'border-color:rgba(74,158,255,.3);':''}">
+        <div class="card-header">
+          <span class="card-num">T${k}</span>
+          ${t.dna?`<span class="card-dna-badge">DNA</span>`:''}
+        </div>
+        <div class="card-name">${t.name}</div>
+        <div class="card-desc">${t.short}</div>
+        <div class="card-tag" style="background:${d};color:${c};">${t.dna?'Incluso em todas':'Ver detalhes'}</div>
+      </div>`;
+    }).join('');
+}
+
+function openTech(id){
+  const t=T[id],c=CM[t.color]||'var(--blue)',d=DM[t.color]||'var(--blue-dim)';
+  const used=L.filter(l=>l.techs.includes(id));
+  let h=`${t.dna?`<span style="font-size:10px;font-weight:700;background:var(--blue);color:#fff;padding:3px 10px;border-radius:10px;display:inline-block;margin-bottom:12px;">DNA ZEISS — incluso em todas as lentes</span>`:`<span style="font-size:10px;color:var(--text3);display:block;margin-bottom:10px;">TECNOLOGIA ${id}</span>`}
+  <div class="modal-name">${t.name}</div>
+  <div class="modal-desc">${t.desc}</div>`;
+  if(used.length){
+    h+=`<div class="modal-sec">Presente nas lentes</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;">
+      ${used.map(l=>{const cs=CS[l.cat];return `<span style="font-size:12px;padding:5px 10px;border-radius:8px;background:${cs.bg};color:${cs.c};cursor:pointer;min-height:36px;display:inline-flex;align-items:center;" onclick="closeModal();setTimeout(()=>openLens('${l.id}'),200);">${l.name}</span>`;}).join('')}
+    </div>`;
+  }
+  showModal(h);
+}
+
+// ═══════════════════════ RENDER LENSES ═══════════════════════
+function renderLenses(f){
+  const fams=[{k:'acabada',l:'Monofocal Acabada'},{k:'surfacada',l:'Monofocal Surfaçada'},{k:'progressiva',l:'Progressivas SmartLife / Light 2'},{k:'clearmind',l:'🧠 ClearMind — Nova Linha'},{k:'especial',l:'Especialidades'}];
+  let h='';
+  for(const fam of fams){
+    if(f!=='all'&&f!==fam.k) continue;
+    const items=L.filter(l=>l.cat===fam.k);
+    const cs=CS[fam.k];
+    h+=`<div class="lens-family">
+      <div class="lf-header">
+        <span class="lf-title" style="color:${cs.c};">${fam.l}</span>
+        <div class="lf-line"></div>
+        <span style="font-size:11px;color:var(--text3);">${items.length}</span>
+      </div>
+      <div class="grid g3">${items.map(renderLCard).join('')}</div>
+    </div>`;
+  }
+  document.getElementById('lenses-container').innerHTML=h;
+}
+
+function renderLCard(l){
+  const cs=CS[l.cat];
+  return `<div class="card" onclick="openLens('${l.id}')">
+    <span class="card-cat" style="background:${cs.bg};color:${cs.c};">${cs.l}</span>
+    ${l.sig?`<span class="card-sig">★ Sig</span>`:''}
+    <div class="card-name">${l.name}</div>
+    <div class="card-short">${l.short}</div>
+    <div class="card-techs">
+      ${l.techs.slice(0,4).map(n=>{const t=T[n];return t?`<span class="card-tech${t.dna?' dna':''}">${t.dna?'DNA':'T'}${n}</span>`:''}).join('')}
+      ${l.techs.length>4?`<span class="card-tech">+${l.techs.length-4}</span>`:''}
+    </div>
+  </div>`;
+}
+
+function filtL(cat,el){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  renderLenses(cat);
+}
+
+function openLens(id){
+  const l=L.find(x=>x.id===id);if(!l)return;
+  const cs=CS[l.cat];
+  const techs=l.techs.map(n=>T[n]).filter(Boolean);
+  const dna=techs.filter(t=>t.dna),own=techs.filter(t=>!t.dna);
+  let h=`<span class="modal-cat" style="background:${cs.bg};color:${cs.c};">${cs.l}</span>
+    ${l.sig?`<span style="font-size:10px;font-weight:700;background:linear-gradient(135deg,#c8a84b,#f5d87a);color:#1a1000;padding:2px 9px;border-radius:10px;margin-left:5px;">★ Signature</span>`:''}
+    <div class="modal-name">${l.name}</div>
+    <div class="modal-desc">${l.desc}</div>
+    <div style="background:${cs.bg};border-radius:8px;padding:10px 13px;margin-bottom:14px;font-size:13px;color:${cs.c};">
+      <strong>Ideal para:</strong> <span style="opacity:.85;">${l.ideal}</span>
+    </div>`;
+  if(l.extra.length){
+    h+=`<div class="modal-sec" style="color:var(--violet);">Tecnologias exclusivas</div>
+    ${l.extra.map(e=>`<div class="mti mti-excl"><div class="mti-name">${e.split(' — ')[0]}</div>${e.includes(' — ')?`<div class="mti-desc">${e.split(' — ')[1]}</div>`:''}</div>`).join('')}`;
+  }
+  if(own.length){
+    h+=`<div class="modal-sec">Tecnologias incluídas</div>
+    ${own.map(t=>`<div class="mti"><div class="mti-name">${t.name}</div><div class="mti-desc">${t.desc}</div></div>`).join('')}`;
+  }
+  h+=`<div class="modal-sec" style="color:var(--blue);">DNA ZEISS (sempre incluso)</div>
+  ${dna.map(t=>`<div class="mti mti-dna"><div class="mti-name" style="color:var(--blue);">${t.name}</div><div class="mti-desc">${t.desc}</div></div>`).join('')}
+  <div class="modal-sec">Antirreflexo</div>
+  <div style="font-size:13px;color:var(--text2);line-height:1.6;">${l.ar.join(' · ')}</div>`;
+  if(l.sig){
+    h+=`<div class="modal-sec" style="color:var(--gold);">ZEISS Signature</div>
+    <div style="background:linear-gradient(135deg,#0c1e3a,#0a3d6b);border-radius:10px;padding:14px;font-size:13px;color:rgba(255,255,255,.75);line-height:1.7;">
+      ★ Par de lentes Individual grátis após 3 meses<br>
+      ★ Voucher 50% OFF para presentear<br>
+      ★ Garantia de preço por 2 anos<br>
+      ★ Consulta gratuita com visagista
+    </div>`;
+  }
+  showModal(h);
+}
+
+// ═══════════════════════ SIGNATURE PAGE ═══════════════════════
+function renderSig(){
+  document.getElementById('sig-grid').innerHTML=L.filter(l=>l.sig).map(renderLCard).join('');
+}
+
+// ═══════════════════════ MODAL ═══════════════════════
+function showModal(h){
+  document.getElementById('modal-body').innerHTML=h;
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  document.getElementById('modal').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+// swipe down to close
+let touchY=0;
+document.querySelector('.modal').addEventListener('touchstart',e=>{touchY=e.touches[0].clientY;},{passive:true});
+document.querySelector('.modal').addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-touchY>80)closeModal();},{passive:true});
+
+// ═══════════════════════ NAVIGATION ═══════════════════════
+const TITLES={home:'Início',dna:'DNA ZEISS',tecnologias:'Tecnologias',lentes:'Portfólio',tratamentos:'Tratamentos',signature:'Signature',quiz:'Quiz',search:'Busca'};
+const BNAV_PAGES=['home','tecnologias','lentes','tratamentos','quiz'];
+
+function go(id,el,type){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  // desktop sidebar
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes(`'${id}'`))b.classList.add('active');});
+  // mobile bottom nav
+  document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.remove('active'));
+  if(BNAV_PAGES.includes(id)) document.getElementById('bnav-'+id)?.classList.add('active');
+  document.getElementById('topbar-title').textContent=TITLES[id]||id;
+  document.getElementById('srch').value='';
+  document.querySelector('.main').scrollTo(0,0);
+}
+
+// ═══════════════════════ SEARCH ═══════════════════════
+function doSearch(q){
+  q=q.trim().toLowerCase();
+  if(!q){if(document.getElementById('page-search').classList.contains('active'))go('home');return;}
+  const res=[];
+  Object.entries(T).forEach(([k,t])=>{
+    if(t.name.toLowerCase().includes(q)||t.desc.toLowerCase().includes(q)||t.short.toLowerCase().includes(q))
+      res.push({type:'tech',id:parseInt(k),t});
+  });
+  L.forEach(l=>{
+    if(l.name.toLowerCase().includes(q)||l.short.toLowerCase().includes(q)||l.desc.toLowerCase().includes(q)||l.ideal.toLowerCase().includes(q))
+      res.push({type:'lens',l});
+  });
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-search').classList.add('active');
+  document.getElementById('topbar-title').textContent=`"${q}"`;
+  const sr=document.getElementById('search-results');
+  if(!res.length){sr.innerHTML=`<p style="color:var(--text2);">Nenhum resultado para "${q}".</p>`;return;}
+  sr.innerHTML=`<p style="color:var(--text3);font-size:12px;margin-bottom:14px;">${res.length} resultado${res.length!==1?'s':''}</p>
+  <div class="grid g3">${res.map(r=>{
+    if(r.type==='tech'){
+      const t=r.t,c=CM[t.color]||'var(--blue)',d=DM[t.color]||'var(--blue-dim)';
+      return `<div class="card" onclick="openTech(${r.id})"><div class="card-header"><span class="card-num">T${r.id}</span>${t.dna?`<span class="card-dna-badge">DNA</span>`:''}</div><div class="card-name">${t.name}</div><div class="card-desc">${t.short}</div><div class="card-tag" style="background:${d};color:${c};">Tecnologia</div></div>`;
+    } else return renderLCard(r.l);
+  }).join('')}</div>`;
+}
+
+// ═══════════════════════ QUIZ ═══════════════════════
+const Q=[
+  {q:'Qual tecnologia filtra 40% da luz azul nociva de telas digitais?',opts:['UVProtect','FreeForm','BlueGuard','Luminance Design 2.0'],c:2,exp:'BlueGuard é o DNA ZEISS que filtra 40% da luz azul nociva. Incluso em todas as lentes sem custo.'},
+  {q:'Qual DuraVision oferece 2 anos de garantia E estética dourada?',opts:['DuraVision Platinum','DuraVision Gold','DuraVision Silver','DuraVision Chrome'],c:1,exp:'DuraVision Gold oferece 2 anos de garantia e estética dourada — especialmente apreciado pelo público feminino.'},
+  {q:'A DriveSafe pode receber tratamento DuraVision Platinum?',opts:['Sim, é o recomendado','Sim, mas só o Platinum','Não — usa tratamento DriveSafe exclusivo','Não — não aceita nenhum AR'],c:2,exp:'A DriveSafe usa tratamento DuraVision DriveSafe exclusivo. Não é compatível com Chrome, Silver, Platinum ou Gold.'},
+  {q:'Quantos benefícios tem o programa ZEISS Signature?',opts:['2','3','4','5'],c:2,exp:'São 4 benefícios: par Individual grátis após 3 meses, voucher 50% OFF, garantia de preço por 2 anos, consulta com visagista.'},
+  {q:'Qual lente especial é ideal para quem usa lente de contato?',opts:['ZEISS Sport','ZEISS DriveSafe','SmartLife Digital','ZEISS EnergizeMe'],c:3,exp:'EnergizeMe tem design especial para usuários de lente de contato, aliviando tensão ocular com adição de 0,40D.'},
+  {q:'O que é o FreeForm no DNA ZEISS?',opts:['Filtro de luz azul','Tecnologia de fabricação de alta precisão','Proteção UV 400nm','Adaptação digital'],c:1,exp:'FreeForm é tecnologia de fabricação de alta precisão que torna a visão mais nítida em toda a lente com adaptação rápida.'},
+  {q:'Qual progressiva reúne TODAS as 13 tecnologias?',opts:['SmartLife Superb','SmartLife Pure','SmartLife Individual 3','Light 2 3Dv'],c:2,exp:'A Progressiva SmartLife Individual 3 reúne todas as 13 tecnologias e participa do programa ZEISS Signature.'},
+  {q:'Qual tecnologia ajuda a focar em diferentes distâncias — do celular ao horizonte?',opts:['IndividualFit','Óptica Dinâmica Inteligente','Adaptation Control','FrameFit'],c:1,exp:'A Óptica Dinâmica Inteligente ajuda os olhos a focar com facilidade em qualquer distância, com transições suaves.'},
+  {q:'Qual o diferencial da Cosmetic Edge Technology na ZEISS Sport?',opts:['Visão noturna','Filtro solar automático','Reduz até 30% da espessura nas bordas','Personalização facial'],c:2,exp:'Cosmetic Edge Technology reduz a espessura das bordas em até 30% em lentes negativas de grau elevado.'},
+  {q:'DuraVision Chrome e Silver — qual o prazo de garantia?',opts:['6 meses','1 ano','2 anos','3 anos'],c:1,exp:'Chrome e Silver têm 1 ano de garantia. Platinum e Gold têm 2 anos.'},
+];
+
+let qi=0,sc=0,ans=false;
+function startQ(){qi=0;sc=0;ans=false;renderQ();}
+function renderQ(){
+  const q=Q[qi];
+  document.getElementById('quiz-prog').innerHTML=Q.map((_,i)=>`<div class="qp-dot ${i<qi?'done':i===qi?'current':''}"></div>`).join('');
+  document.getElementById('quiz-q').textContent=q.q;
+  document.getElementById('quiz-opts').innerHTML=q.opts.map((o,i)=>`<button class="quiz-opt" onclick="ansQ(${i})">${o}</button>`).join('');
+  document.getElementById('quiz-result').className='quiz-result';
+  document.getElementById('quiz-result').textContent='';
+  document.getElementById('quiz-next').style.display='none';
+  document.getElementById('quiz-score').textContent=`${sc} / ${qi} corretas`;
+  ans=false;
+}
+function ansQ(i){
+  if(ans)return; ans=true;
+  const q=Q[qi];
+  document.querySelectorAll('.quiz-opt').forEach((o,idx)=>{
+    o.disabled=true;
+    if(idx===q.c)o.classList.add('correct');
+    else if(idx===i&&i!==q.c)o.classList.add('wrong');
+  });
+  const ok=i===q.c; if(ok)sc++;
+  const r=document.getElementById('quiz-result');
+  r.style.cssText=`background:${ok?'var(--green-dim)':'var(--coral-dim)'};color:${ok?'var(--green)':'var(--coral)'};border-radius:8px;padding:12px 14px;`;
+  r.textContent=(ok?'✓ Correto! ':'✗ Incorreto. ')+q.exp;
+  r.classList.add('show');
+  document.getElementById('quiz-next').style.display='';
+  document.getElementById('quiz-next').textContent=qi<Q.length-1?'Próxima →':'Resultado';
+  document.getElementById('quiz-score').textContent=`${sc} / ${qi+1} corretas`;
+}
+function qNext(){
+  qi++;
+  if(qi>=Q.length){
+    const pct=Math.round(sc/Q.length*100);
+    const msg=pct>=80?'Excelente! Pronta para vender ZEISS! 🎉':pct>=60?'Bom resultado! Revise os pontos errados.':'Continue estudando e tente novamente.';
+    document.getElementById('quiz-card').innerHTML=`
+      <div style="text-align:center;padding:24px 0;">
+        <div style="font-size:52px;font-weight:300;color:#fff;font-family:var(--font-serif);">${sc}/${Q.length}</div>
+        <div style="font-size:26px;color:${pct>=80?'var(--green)':pct>=60?'var(--gold)':'var(--coral)'};margin:8px 0 16px;">${pct}%</div>
+        <div style="font-size:14px;color:var(--text2);margin-bottom:24px;line-height:1.6;">${msg}</div>
+        <button class="q-btn" onclick="restartQ()">Tentar novamente</button>
+      </div>`;
+    return;
+  }
+  renderQ();
+}
+function restartQ(){
+  document.getElementById('quiz-card').innerHTML=`
+    <div class="quiz-prog" id="quiz-prog"></div>
+    <div class="quiz-q" id="quiz-q"></div>
+    <div class="quiz-opts" id="quiz-opts"></div>
+    <div class="quiz-result" id="quiz-result"></div>
+    <div class="quiz-nav">
+      <div class="quiz-score" id="quiz-score"></div>
+      <button class="q-btn" id="quiz-next" onclick="qNext()" style="display:none;">Próxima →</button>
+    </div>`;
+  startQ();
+}
+
+// ═══════════════════════ INIT ═══════════════════════
+renderTechs();
+renderLenses('all');
+renderSig();
+startQ();
+</script>
+
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('SW registrado:', reg.scope))
+      .catch(err => console.log('SW erro:', err));
+  });
+}
+</script>
+</body>
+</html>
